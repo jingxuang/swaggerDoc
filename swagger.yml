@@ -1,0 +1,364 @@
+swagger: '2.0'
+
+info:
+  title: Craigslist APIs
+  version: '1.0'
+  description: APIs of the Craigslist backend server for cs5500
+
+paths:
+  /api/post:
+    get:
+      tags:
+        - Post
+      operationId: getPost
+      description: Get list of all posts from the database
+      responses:
+        '200':
+          description: Get the collection of posts
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/post'
+          
+    post:
+      tags:
+        - Post
+      operationId: addPost
+      description: Create a new post
+      parameters:
+        - in: body
+          name: post
+          description: The new post to create
+          required: true
+          schema:
+            $ref: '#/definitions/post'
+      responses:
+        '200':
+          description: Create the new post successfully
+          schema:
+            $ref: '#/definitions/post'
+        '400':
+          $ref: '#/responses/badRequest'
+
+    put:
+      tags:
+        - Post
+      operationId: updatePost
+      description: Update an existing post
+      parameters:
+        - in: body
+          name: post
+          description: the new post to update
+          required: true
+          schema:
+            $ref: '#/definitions/post'
+      responses:
+        '200':
+          description: Update the existing post successfully
+          schema:
+            $ref: '#/definitions/post'
+        '400':
+          $ref: '#/responses/badRequest'
+    delete:
+      tags:
+        - Post
+      operationId: deletePost
+      description: Delete an existing post
+      parameters:
+        - in: body
+          name: post
+          description: the existiong post to delete
+          required: true
+          schema: 
+            $ref: '#/definitions/post'
+      responses:
+        '200':
+          description: Delete the existing post successfully
+          schema:
+            $ref: '#/definitions/post'
+        '404':
+          description: A post with specificed id was not found
+
+  /api/post/{postId}:
+    parameters:
+      - in: path
+        name: postId
+        type: string
+        format: uuid
+        required: true
+        description: ID of the post to get
+    get:
+      tags:
+        - Post
+      operationId: getPostByID
+      description: Get a post by its ID
+      responses:
+        '200':
+          description: Get the post successfully
+          schema:
+            $ref: '#/definitions/post'
+        '404':
+          description: A post with the specified ID was not found
+  /api/user:
+    get:
+      tags: 
+        - User
+      operationId: getUser
+      description: Get list of all users
+      responses:
+        '200':
+          description: Get users response
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/user'
+
+    post:
+      tags:
+        - User
+      operationId: createUser
+      description: Register a new user
+      parameters:
+        - in: body
+          name: user
+          description: the new user to register
+          required: true
+          schema: 
+            $ref: '#/definitions/user'
+      responses:
+        '200':
+          description: Register the new user successfully
+
+  /user/update:
+    put:
+      tags:
+        - User
+      operationId: updateUser
+      description: Update an existing user
+      parameters:
+        - in: body
+          name: user
+          description: the new user to update
+          required: true
+          schema:
+            $ref: '#/definitions/user'
+      responses:
+        '200':
+          description: Update the existing user successfully
+          schema:
+            $ref: '#/definitions/user'
+        '400':
+          $ref: '#/responses/badRequest'
+
+  /user/delete:
+    delete:
+      tags:
+        - User
+      operationId: deleteUser
+      description: Delete an existing user
+      parameters:
+        - in: body
+          name: user
+          description: the existiong user to delete
+          required: true
+          schema:
+            $ref: '#/definitions/user'
+      responses:
+        '200':
+          description: Delete the existing user successfully
+          schema:
+            $ref: '#/definitions/user'
+        '404':
+          description: A user with specificed id was not found
+
+  /user/{name}:
+    get:
+      tags:
+        - User
+      operationId: getUserByName
+      description: Get a user by its name
+      parameters:
+      - in: path
+        name: name
+        type: string
+        required: true
+        description: name of a user
+      responses:
+        '200':
+          description: Get the user successfully
+          schema:
+            $ref: '#/definitions/user'
+        '404':
+          description: A user with the specified name was not found
+
+  /login:
+    post:
+      tags:
+        - User
+      operationId: login
+      description: login an existening account
+      parameters:
+        - in: body
+          name: user
+          description: the user to login
+          required: true
+          schema:
+            $ref: '#/definitions/user'
+      responses:
+        '200':
+          description: User login successfully
+
+  /logout:
+    post:
+      tags:
+        - User
+      operationId: logout
+      description: logout an existening account
+      parameters:
+        - in: body
+          name: user
+          description: the user to logout
+          required: true
+          schema:
+            $ref: '#/definitions/user'
+      responses:
+        '200':
+          description: User logout successfully
+
+
+      
+
+  /api/search:
+    get:
+        tags:
+          - Search
+        operationId: searchController
+        description: Search posts based on given conditions. 
+        parameters:
+          - in: path
+            name: q
+            required: true
+            type: string
+            description: the query word
+          - in: path
+            name: t
+            type: string
+            required: true
+            description: where to search - title, content or both
+          - in: path
+            name: c
+            type: string
+            required: true
+            description: search posts in which category
+        responses:
+          '200':
+            description: Get search response
+            schema:
+              $ref: '#/definitions/post'
+          '400':
+            description: bad request - missing parameters
+
+  /api/categories:
+    get:
+      tags:
+        - Category
+      operationId: getCategory
+      description: Get list of all categories 
+      responses:
+        '200':
+          description: Get list of categories response
+          schema:
+            $ref: '#/definitions/category'
+  
+  /api/categories/{id}/posts:
+    get:
+      tags:
+        - Category
+      operationId: getPostsByCategoryId
+      description: Get list of posts under a specific category
+      parameters:
+        - in: path
+          name: id
+          type: string
+          format: uuid
+          required: true
+          description: the ID of category
+      responses:
+        '200':
+          description: Get list of posts response
+          schema:
+            type: array
+            items: 
+              $ref: '#/definitions/post'
+        '404':
+          description: The given category not found
+
+responses:
+  badRequest:
+    description: Bad request
+    schema:
+      type: string
+  internalServerError:
+    description: Internal server error
+    schema:
+      type: string
+
+definitions:
+    user:
+      type: object
+      properties: 
+        id:
+          $ref: '#/definitions/objectId'
+        name:
+          type: string
+        password:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+      required:
+        - name
+        - password
+      
+    post:
+      type: object
+      properties:
+        id:
+          $ref: '#/definitions/objectId'
+        title:
+          type: string
+        categoryId:
+          $ref: '#/definitions/objectId'
+        content:
+          type: string
+        created:
+          type: integer
+          format: int64
+        modified:
+          type: integer
+          format: int64
+        author:
+          type: string
+        images:
+          type: array
+          items:
+            type: string
+        tags:
+          type: array
+          items:
+            type: string
+    objectId:
+      type: string
+      format: uuid
+    category:
+      type: object
+      properties: 
+        id:
+          $ref: '#/definitions/objectId'
+        name:
+          type: string
+        parent:
+          $ref: '#/definitions/objectId'
+      required:
+        - "name"
